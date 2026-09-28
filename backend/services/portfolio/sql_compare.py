@@ -4,7 +4,7 @@ import pandas as pd
 
 
 def compare(sql_csv: Path, pandas_csv: Path, keys: list[str], cols: list[str], tol: float = 0.01) -> dict:
-    a, b = pd.read_csv(sql_csv), pd.read_csv(pandas_csv)
+    a, b = pd.read_csv(sql_csv, dtype={"ticker": str}), pd.read_csv(pandas_csv, dtype={"ticker": str})
     a.columns, b.columns = a.columns.str.lower(), b.columns.str.lower()
     for k in keys:
         if "date" in k:

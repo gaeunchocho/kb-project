@@ -1,30 +1,30 @@
 [
  {
-  "title": "[SQL] 보유/평가 쿼리 — portfolio.sql",
-  "body": "## 산출물\n- `sql/portfolio.sql`\n- `outputs/sql_A_valuation.csv`, `sql_A_top_bottom.csv`, `sql_A_weight.csv`\n\n## 해야 할 것\n- [ ] 최신 종가 JOIN → 평가금액·손익·손익률\n- [ ] 상위/하위 3 (ROW_NUMBER)\n- [ ] 비중 (SUM OVER)\n- [ ] `python tests/run_sql.py sql/portfolio.sql` 로 export 확인\n\n## 브랜치\n`<본인 github id>` (개인 이름 브랜치)  ·  리뷰 짝: #3"
+  "title": "[1] 팀 리드 / 공통 설계 — 요구사항, DB/API 구조, Git 관리, 기능 통합",
+  "body": "## 산출물\n- `docs/requirements.md`, `docs/api.md`, `README.md`, `CONTRIBUTION.md`, `result_report.md` 취합, Issue·PR 관리\n\n## 해야 할 것\n- [ ] Issue·개인 브랜치 세팅, Collaborators, main 보호\n- [ ] 02:30 Insights 기여 편중 점검, PR 리뷰·머지 (남의 코드 대신 커밋 금지)\n- [ ] result_report 3개 질문 취합, README 핵심 결과 3줄\n- [ ] 03:45 `v1.0` 태그\n\n## 브랜치\n`<본인 github id>` (개인 이름 브랜치)  ·  리뷰 짝: 전체"
  },
  {
-  "title": "[SQL] 시계열·지수 비교 쿼리 — market.sql",
-  "body": "## 산출물\n- `sql/market.sql`\n- `outputs/sql_B_daily_total.csv`, `sql_B_vs_index.csv`, `sql_B_index_shock_days.csv`, `sql_B_contribution.csv` 외\n\n## 해야 할 것\n- [ ] 일자별 총액, LAG 변화율\n- [ ] market_index JOIN → 초과수익률\n- [ ] 지수 급변일 상위 5 + 종목별 기여도\n\n## 브랜치\n`<본인 github id>` (개인 이름 브랜치)  ·  리뷰 짝: #4"
+  "title": "[2] F 데이터 — portfolio·stock_prices 전처리·검증",
+  "body": "## 산출물\n- `backend/utils/columns.py`, `backend/utils/load_to_sqlite.py`, `data/processed/*.csv` + 전처리 스크립트, 원본 품질 체크(결측·중복·이상값)\n\n## 해야 할 것\n- [ ] 원본 컬럼 매핑(`columns.py`) 확인, BOM·타입 처리\n- [ ] 결측·중복·이상값 점검 결과를 result_report §1 표에\n- [ ] 종목별 집계 등 전처리 CSV → `data/processed/` + 스크립트\n- [ ] `python backend/utils/load_to_sqlite.py` 로 적재 확인\n\n## 브랜치\n`<본인 github id>` (개인 이름 브랜치)  ·  리뷰 짝: #3"
  },
  {
-  "title": "[Pandas] 평가/손익 분석 — portfolio_analysis.ipynb",
-  "body": "## 산출물\n- `notebooks/portfolio_analysis.ipynb`\n- `outputs/pandas_C_valuation.csv`, `pandas_C_top_bottom.csv`\n\n## 해야 할 것\n- [ ] 계산은 `backend/services/portfolio/calculator.py` 함수로, 노트북은 import\n- [ ] #1 과 같은 계산을 Pandas로\n- [ ] 비중·집중도 추가\n- [ ] 커밋 전 output clear\n\n## 브랜치\n`<본인 github id>` (개인 이름 브랜치)  ·  리뷰 짝: #1"
+  "title": "[3] F 분석/SQL — 평가금액·손익 계산, SQL 조회·정렬, Pandas 결과 비교",
+  "body": "## 산출물\n- `sql/portfolio.sql` → `outputs/sql_A_*.csv`, `backend/services/portfolio/calculator.py`·`sql_compare.py`, `notebooks/portfolio_analysis.ipynb` → `outputs/pandas_C_*.csv`\n\n## 해야 할 것\n- [ ] `sql/portfolio.sql` 실행·이해, 필요한 쿼리 추가 (포지션 SUM 패턴 유지)\n- [ ] `portfolio_analysis.ipynb` 실행 → `outputs/pandas_C_*.csv`\n- [ ] SQL 결과와 Pandas 결과 비교 (`sql_compare.py`), 차이 나면 원인 기록\n- [ ] 커밋 전 노트북 output clear\n\n## 브랜치\n`<본인 github id>` (개인 이름 브랜치)  ·  리뷰 짝: #2"
  },
  {
-  "title": "[Pandas] 시계열·지수 비교 — market_analysis.ipynb",
-  "body": "## 산출물\n- `notebooks/market_analysis.ipynb`\n- `outputs/pandas_D_daily_total.csv`, `pandas_D_vs_index.csv`, `pandas_D_index_shock_days.csv`\n\n## 해야 할 것\n- [ ] 계산은 `backend/services/market/analyzer.py`, `indicators.py` 함수로, 노트북은 import\n- [ ] #2 와 같은 계산을 Pandas로\n- [ ] 상대강도·낙폭 시각화\n- [ ] 커밋 전 output clear\n\n## 브랜치\n`<본인 github id>` (개인 이름 브랜치)  ·  리뷰 짝: #2"
+  "title": "[4] C 데이터 수집 — 금융위/KRX API 수집, 정제, 시계열 정렬",
+  "body": "## 산출물\n- `backend/services/market/collector.py`, `data/market/index.csv`(·gold·carbon), 거래일 정합 확인\n\n## 해야 할 것\n- [ ] data.go.kr 지수시세 API 키 시도 (20분 제한). 되면 `collector.py --force`, 안 되면 SYNTH_KOSPI 유지\n- [ ] 금·배출권 시도 (선택)\n- [ ] 거래일 정합(시세 vs 지수) 확인, 불일치 시 처리 방침 기록\n- [ ] `data/market/*.csv` 를 **00:40 전 PR**\n\n## 브랜치\n`<본인 github id>` (개인 이름 브랜치)  ·  리뷰 짝: #5"
  },
  {
-  "title": "[C] 시장지수 확보·분석 — backend/services/market/collector.py, index_analysis.ipynb",
-  "body": "## 산출물\n- `data/market/index.csv` (**00:40 전 dev에 커밋**)\n- `data/backend/services/market/collector.py`, `notebooks/index_analysis.ipynb`, `outputs/pandas_E_*.csv`\n\n## 해야 할 것\n- [ ] data.go.kr 지수시세 API 시도 (20분 넘으면 가상 지수로 먼저 커밋)\n- [ ] 지수별 평균·최대·최소·변동성, 변화 큰 구간\n- [ ] 대체 생성 시 result_report 한계 절에 이유 기재\n\n## 브랜치\n`<본인 github id>` (개인 이름 브랜치)  ·  리뷰 짝: #6"
+  "title": "[5] C 분석 — 지수·금·배출권 비교, 평균/최대/최소, 변동구간 탐색",
+  "body": "## 산출물\n- `sql/market.sql` → `outputs/sql_B_*.csv`, `backend/services/market/analyzer.py`·`indicators.py`, `notebooks/market_analysis.ipynb`·`index_analysis.ipynb` → `outputs/pandas_D_*`, `pandas_E_*`\n\n## 해야 할 것\n- [ ] `sql/market.sql` 실행·이해, B-6~B-8 지수 비교 쿼리\n- [ ] `market_analysis.ipynb`, `index_analysis.ipynb` 실행 → `outputs/pandas_D_*`, `pandas_E_*`\n- [ ] 평균/최대/최소/변동성, 변동 큰 구간 해석 마크다운\n- [ ] 커밋 전 노트북 output clear\n\n## 브랜치\n`<본인 github id>` (개인 이름 브랜치)  ·  리뷰 짝: #4"
  },
  {
-  "title": "[Verify] 교차검증 — tests/integration/test_sql_vs_pandas.py",
-  "body": "## 산출물\n- `tests/tests/integration/test_sql_vs_pandas.py`, `outputs/validation_report.md`\n\n## 해야 할 것\n- [ ] 원본 품질(결측·중복·IQR)\n- [ ] 거래일 정합 (stock_prices vs market_index)\n- [ ] SQL↔Pandas 3쌍 PASS\n- [ ] 03:00 dev 머지 후 최종 실행, 결과를 result_report 검증 칸에 반영\n\n## 브랜치\n`<본인 github id>` (개인 이름 브랜치)  ·  리뷰 짝: #5"
+  "title": "[6] AI 브리핑 — F/C 결과를 자연어 요약·브리핑",
+  "body": "## 산출물\n- `backend/services/ai/briefing.py`, `ai_log.md`(팀 사례 취합·검증), `result_report.md` §6 브리핑\n\n## 해야 할 것\n- [ ] `python -m backend.services.ai.briefing` 실행, 문장이 outputs 수치와 일치하는지 대조\n- [ ] LLM 요약 시도 시 근거 없는 주장 제거, ai_log에 기록\n- [ ] 팀원 ai_log 사례 취합 (최소 2개, 채택/수정/폐기 이유)\n- [ ] result_report §6 브리핑 작성\n\n## 브랜치\n`<본인 github id>` (개인 이름 브랜치)  ·  리뷰 짝: #7"
  },
  {
-  "title": "[Docs] 리드 — 요구사항·DB/API 설계·Git 관리·통합·AI 브리핑",
-  "body": "## 산출물\n- `docs/requirements.md`, `docs/api.md`\n- `backend/main.py`, `backend/api/*` (선택), `backend/services/ai/briefing.py`\n- `ai_log.md`, `result_report.md`, `README.md` 핵심 결과, `CONTRIBUTION.md` 대조\n\n## 해야 할 것\n- [ ] Issue·개인 브랜치 세팅, data/ 원본 CSV main 커밋 (00:20)\n- [ ] 02:30 Insights 기여 편중 점검, PR 리뷰·머지 (남의 코드 대신 커밋 금지)\n- [ ] briefing.py 출력이 outputs 수치와 일치하는지 확인 후 result_report §6\n- [ ] 03:45 `v1.0` 태그\n\n## 브랜치\n`<본인 github id>` (개인 이름 브랜치)"
+  "title": "[7] 서비스/UI + 통합/테스트 — 화면 구성, 시각화, API 연동, 테스트",
+  "body": "## 산출물\n- `frontend/app.py`, `backend/main.py`·`backend/api/*`, `tests/` 실행(단위 + `integration/test_sql_vs_pandas.py`) → `outputs/validation_report.md`\n\n## 해야 할 것\n- [ ] `python -m pytest tests -q`, `python tests/integration/test_sql_vs_pandas.py` 실행 → PASS 확인\n- [ ] `streamlit run frontend/app.py` 화면에 F/C 결과 시각화\n- [ ] `uvicorn backend.main:app` API 9개 응답 확인 (선택)\n- [ ] 03:00 main 머지 후 최종 검증 → `outputs/validation_report.md` 커밋\n\n## 브랜치\n`<본인 github id>` (개인 이름 브랜치)  ·  리뷰 짝: #6"
  }
 ]

@@ -1,4 +1,4 @@
-portfolio_id,stock_id,stock_name,buy_price,quantity
+﻿portfolio_id,stock_id,stock_name,buy_price,quantity
 PF06_0001,S06_027,SYNTH_STOCK_27,24633.81,65
 PF06_0002,S06_028,SYNTH_STOCK_28,63905.46,328
 PF06_0003,S06_015,SYNTH_STOCK_15,63627.02,494

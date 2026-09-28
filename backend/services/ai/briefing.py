@@ -18,6 +18,8 @@ def build_facts() -> dict:
     f = {}
     val = _read("pandas_C_valuation.csv")
     if val is not None:
+        if "name" in val.columns:
+            val["ticker"] = val["name"] + "(" + val["ticker"].astype(str).str.zfill(6) + ")"
         f["total_eval"] = float(val["eval_amount"].sum())
         f["total_pnl_pct"] = round(float((val["eval_amount"].sum() - val["cost_amount"].sum()) / val["cost_amount"].sum() * 100), 2)
         f["best"] = val.iloc[0][["ticker", "pnl_pct"]].to_dict()

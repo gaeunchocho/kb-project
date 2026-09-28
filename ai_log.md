@@ -17,21 +17,21 @@
 
 ---
 
-### 사례 1 — (담당자) (도구: )
-- 요청 내용:
-- AI 응답 요약:
-- 실행·검증 결과:
-- 판정:
-- 이유:
-- 최종 반영 위치:
+### 사례 1 — 리드 (도구: Claude)
+- 요청 내용: 종목별 평가금액·손익률 SQL과 같은 계산의 Pandas 코드, 두 결과를 비교하는 검증 스크립트 생성
+- AI 응답 요약: `portfolio JOIN stock_prices` 후 `quantity * close_price` 로 평가금액, `(close - buy) / buy * 100` 으로 손익률을 구하는 SQL과 동일 로직의 Pandas 코드. **포트폴리오는 종목당 1행**이라고 가정
+- 실행·검증 결과: 강사 CSV를 넣자 검증 FAIL. 원인 ① 실제 portfolio.csv는 종목당 10개 포지션(총 300행)이라 그대로 JOIN하면 종목별 행이 10배로 중복되고 검증 키(ticker)가 겹침 ② 손익률을 '단가' 기준으로 계산하면 포지션마다 매입가가 달라 종목별 값이 정의되지 않음 ③ 원본 컬럼명이 `date/stock_id/price`, 파일 앞에 BOM
+- 판정: 수정
+- 이유: 로직은 맞지만 데이터 구조 가정이 틀렸음. 검증 스크립트가 없었으면 10배 부풀린 총액을 제출할 뻔함
+- 최종 반영 위치: `sql/portfolio.sql` [A-1] `holdings` CTE(종목별 SUM, 가중평균 매입가), `sql/market.sql` 모든 JOIN을 집계 서브쿼리로; `calculator.py` `holdings()`; `backend/utils/columns.py` 컬럼 매핑 + utf-8-sig; 정수 나눗셈 방지용 `* 100.0 /` 를 SQL 상단 주의사항으로 기재
 
-### 사례 2 — (담당자) (도구: )
-- 요청 내용:
-- AI 응답 요약:
-- 실행·검증 결과:
-- 판정:
-- 이유:
-- 최종 반영 위치:
+### 사례 2 — 민지 (도구: Claude Code)
+- 요청 내용: 금융위원회 지수시세정보 API(GetMarketIndexInfoService_V2)로 코스피·코스닥 데이터를 수집하는 `collector.py`를 실제로 동작하게 고쳐달라고 요청
+- AI 응답 요약: 처음엔 오퍼레이션명을 `getStockPriceInfo`로 추측해서 코드를 짰음 (문서 없이 관례적 이름으로 짐작)
+- 실행·검증 결과: `getStockPriceInfo`로 실제 호출하니 `NO_OPENAPI_SERVICE_ERROR(12)`. 이후 채권/파생상품 오퍼레이션(`getBondMarketIndex_V2`, `getDerivationProductMarketIndex_V2`) 네이밍 패턴을 보고 `getStockMarketIndex_V2`로 재추정 → curl로 직접 호출해 `resultCode: 00`, 코스피·코스닥 각 235행 정상 수신 확인. 기존 `collector.py`에 있던 구버전 경로(`/service/GetMarketIndexInfoService/getStockMarketIndex`)는 이 서비스키로 승인된 적 없는 오퍼레이션이라 항상 대체(SYNTH_KOSPI) 경로로 빠지고 있었음
+- 판정: 수정
+- 이유: AI의 첫 추측(오퍼레이션명)은 틀렸고, 실제 curl 호출로 검증한 뒤에야 정확한 이름을 확정함. AI 코드를 그대로 커밋하지 않고 매번 실제 API 응답으로 확인한 덕에 틀린 엔드포인트를 걸러냄
+- 최종 반영 위치: `backend/services/market/collector.py`의 `API_BASE`/`API_OPERATION` 상수, `fetch_index()`
 
 ### 사례 3 — (담당자) (도구: )
 - 요청 내용:

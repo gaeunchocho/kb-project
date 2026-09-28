@@ -4,7 +4,8 @@ from backend.services.portfolio.calculator import valuation, daily_total, top_bo
 
 
 def _data():
-    pf = pd.DataFrame({"ticker": ["A", "B"], "quantity": [10, 5], "buy_price": [100.0, 200.0]})
+    pf = pd.DataFrame({"position_id": ["p1", "p2", "p3"], "ticker": ["A", "A", "B"], "name": ["a", "a", "b"],
+                       "quantity": [5, 5, 5], "buy_price": [90.0, 110.0, 200.0]})   # A는 두 포지션, 평균 100
     sp = pd.DataFrame({"trade_date": pd.to_datetime(["2026-01-02", "2026-01-03"] * 2),
                        "ticker": ["A", "A", "B", "B"], "close_price": [100.0, 110.0, 200.0, 180.0]})
     return pf, sp

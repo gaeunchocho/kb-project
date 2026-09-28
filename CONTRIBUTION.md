@@ -11,68 +11,79 @@
 
 ---
 
-## 1. (이름) — SQL 보유/평가
+## 1. (이름) — 팀 리드 / 공통 설계
 
-- 브랜치: `<본인 github id>` (예: `joonhwanko`)
-- 작업 파일: `sql/portfolio.sql`, `outputs/sql_A_valuation.csv`
+- 브랜치: `<본인 github id>`
+- 작업 파일: `docs/requirements.md`, `docs/api.md`, `README.md`, `CONTRIBUTION.md`, `result_report.md` 취합, Issue·PR 관리
 - 주요 커밋:
-  - `[이름] data: ...` (#해시)
-  - `[이름] feat: ...` (#해시)
-  - `[이름] test: ...` (#해시)
+  - `[이름] type: ...` (#해시)
+  - `[이름] type: ...` (#해시)
 - PR: #번호
 - 리뷰한 PR: #번호 (남긴 의견 요약)
-- 60초 설명: (한 단락)
-
-## 2. (이름) — SQL 시계열·지수 비교
-
-- 브랜치:
-- 작업 파일:
-- 주요 커밋:
-- PR:
-- 리뷰한 PR:
 - 60초 설명:
 
-## 3. (이름) — Pandas 평가/손익
+## 2. (이름) — F 데이터
 
-- 브랜치:
-- 작업 파일:
+- 브랜치: `<본인 github id>`
+- 작업 파일: `backend/utils/columns.py`, `backend/utils/load_to_sqlite.py`, `data/processed/*.csv` + 전처리 스크립트, 원본 품질 체크(결측·중복·이상값)
 - 주요 커밋:
-- PR:
-- 리뷰한 PR:
+  - `[이름] type: ...` (#해시)
+  - `[이름] type: ...` (#해시)
+- PR: #번호
+- 리뷰한 PR: #번호 (남긴 의견 요약)
 - 60초 설명:
 
-## 4. (이름) — Pandas 시계열·지수 비교
+## 3. (이름) — F 분석/SQL
 
-- 브랜치:
-- 작업 파일:
+- 브랜치: `<본인 github id>`
+- 작업 파일: `sql/portfolio.sql` → `outputs/sql_A_*.csv`, `backend/services/portfolio/calculator.py`·`sql_compare.py`, `notebooks/portfolio_analysis.ipynb` → `outputs/pandas_C_*.csv`
 - 주요 커밋:
-- PR:
-- 리뷰한 PR:
+  - `[이름] type: ...` (#해시)
+  - `[이름] type: ...` (#해시)
+- PR: #번호
+- 리뷰한 PR: #번호 (남긴 의견 요약)
 - 60초 설명:
 
-## 5. (이름) — 지표 수집·분석 (C)
+## 4. (이름) — C 데이터 수집
 
-- 브랜치:
-- 작업 파일:
+- 브랜치: `<본인 github id>`
+- 작업 파일: `backend/services/market/collector.py`, `data/market/index.csv`(·gold·carbon), 거래일 정합 확인
 - 주요 커밋:
-- PR:
-- 리뷰한 PR:
+  - `[이름] type: ...` (#해시)
+  - `[이름] type: ...` (#해시)
+- PR: #번호
+- 리뷰한 PR: #번호 (남긴 의견 요약)
 - 60초 설명:
 
-## 6. (이름) — 검증
+## 5. (이름) — C 분석
 
-- 브랜치:
-- 작업 파일:
+- 브랜치: `<본인 github id>`
+- 작업 파일: `sql/market.sql` → `outputs/sql_B_*.csv`, `backend/services/market/analyzer.py`·`indicators.py`, `notebooks/market_analysis.ipynb`·`index_analysis.ipynb` → `outputs/pandas_D_*`, `pandas_E_*`
 - 주요 커밋:
-- PR:
-- 리뷰한 PR:
+  - `[이름] type: ...` (#해시)
+  - `[이름] type: ...` (#해시)
+- PR: #번호
+- 리뷰한 PR: #번호 (남긴 의견 요약)
 - 60초 설명:
 
-## 7. (이름) — 리드: 요구사항·DB/API 설계·Git 관리·통합 + AI 브리핑
+## 6. (이름) — AI 브리핑
 
-- 브랜치:
-- 작업 파일:
+- 브랜치: `<본인 github id>`
+- 작업 파일: `backend/services/ai/briefing.py`, `ai_log.md`(팀 사례 취합·검증), `result_report.md` §6 브리핑
 - 주요 커밋:
-- PR:
-- 리뷰한 PR:
+  - `[이름] type: ...` (#해시)
+  - `[이름] type: ...` (#해시)
+- PR: #번호
+- 리뷰한 PR: #번호 (남긴 의견 요약)
+- 60초 설명:
+
+## 7. (이름) — 서비스/UI + 통합/테스트
+
+- 브랜치: `<본인 github id>`
+- 작업 파일: `frontend/app.py`, `backend/main.py`·`backend/api/*`, `tests/` 실행(단위 + `integration/test_sql_vs_pandas.py`) → `outputs/validation_report.md`
+- 주요 커밋:
+  - `[이름] type: ...` (#해시)
+  - `[이름] type: ...` (#해시)
+- PR: #번호
+- 리뷰한 PR: #번호 (남긴 의견 요약)
 - 60초 설명:

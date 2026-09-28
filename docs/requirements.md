@@ -17,34 +17,36 @@
 
 | 구분 | 필수 (채점 대상) | 선택 (시간 남을 때) |
 |---|---|---|
-| 데이터 | portfolio.csv, stock_prices.csv, market/index.csv | market/gold.csv, market/carbon.csv |
+| 데이터 | 강사 제공 원본(`data/raw/`) + 2번 전처리(`data/processed/`): `06_portfolio.csv`(300포지션), `06_stock_prices.csv`(30종목×252일), 생성 지수 `market/index.csv` | 금융위 API 실제 지수, market/gold.csv, carbon.csv |
 | 분석 | F 평가·손익·비중, C 지수 변동구간, F×C 초과수익·기여도 | 금·배출권 상관, 5일 이동변화 |
 | 검증 | SQL↔Pandas 3쌍 교차검증, 거래일 정합 | 단위 테스트 커버리지 |
-| 출력 | notebooks, outputs/*.csv, result_report.md | backend API, frontend 화면, n8n 전달 |
+| 출력 | notebooks, outputs/*.csv, result_report.md | backend API, frontend 화면(7), n8n 전달 |
 | AI | ai_log.md 사례 ≥2, briefing.py 문장 생성 | LLM 요약 연동 |
 
 **우선순위 원칙**: 필수 열이 03:00까지 완성되지 않으면 선택 열 작업은 중단하고 필수로 합류한다.
 
 ## 3. 기능 요구사항
 
+담당 번호: 1 리드 · 2 F데이터 · 3 F분석/SQL · 4 C수집 · 5 C분석 · 6 AI브리핑 · 7 서비스/UI+테스트
+
 ### F. 포트폴리오 데이터랩
 | ID | 요구사항 | 입력 | 출력 | 담당 |
 |---|---|---|---|---|
-| F-1 | 종목별 최신 종가 기준 평가금액·매입금액·손익·손익률 계산 | portfolio, stock_prices | `outputs/sql_A_valuation.csv`, `pandas_C_valuation.csv` | SQL 1, Pandas 3 |
+| F-1 | 포지션을 종목별로 SUM한 뒤 최신 종가 기준 평가금액·매입금액·손익·손익률 계산 (가중평균 매입가) | portfolio, stock_prices | `outputs/sql_A_valuation.csv`, `pandas_C_valuation.csv` | 3 |
 | F-2 | 손익률 상위/하위 3종목 | F-1 | `*_top_bottom.csv` | 〃 |
 | F-3 | 종목 비중(%) | F-1 | `sql_A_weight.csv` | 〃 |
-| F-4 | 일자별 포트폴리오 총액과 전일 대비 변화율 | portfolio, stock_prices | `sql_B_daily_total.csv`, `pandas_D_daily_total.csv` | SQL 2, Pandas 4 |
-| F-5 | SQL 결과와 Pandas 결과의 값 일치 검증 (허용오차 0.01) | outputs/ | `outputs/validation_report.md` | 검증 6 |
+| F-4 | 일자별 포트폴리오 총액과 전일 대비 변화율 | portfolio, stock_prices | `sql_B_daily_total.csv`, `pandas_D_daily_total.csv` | 5 |
+| F-5 | SQL 결과와 Pandas 결과의 값 일치 검증 (허용오차 0.01) | outputs/ | `outputs/validation_report.md` | 7 (계산 비교 로직은 3) |
 
 ### C. 시장 지표 브리핑
 | ID | 요구사항 | 입력 | 출력 | 담당 |
 |---|---|---|---|---|
-| C-1 | 지수 시세 수집 (API → CSV, 실패 시 가상 지수 자동 생성) | 금융위 API 또는 stock_prices | `data/market/index.csv` | 수집 5 |
-| C-2 | 지표별 평균·최대·최소·변동성, 일간 변화 상위 5 | market/* | `pandas_E_index_summary.csv` | 수집 5 |
-| C-3 | 포트폴리오 vs 지수 일간 변화율·초과수익률 | F-4, C-1 | `sql_B_vs_index.csv`, `pandas_D_vs_index.csv` | SQL 2, Pandas 4 |
-| C-4 | 지수 급변일(상위 5)의 포트폴리오 방향과 종목별 기여도 | C-3 | `sql_B_index_shock_days.csv`, `sql_B_contribution.csv` | SQL 2 |
-| C-5 | 위 결과를 근거 수치와 함께 한국어 브리핑 문장으로 생성 | outputs/ | `result_report.md` §6, `briefing.py` | 리드 7 |
-| C-6 | (선택) 금·배출권 시세 수집 및 지수와 비교 | 금융위 일반상품시세 API | `data/market/gold.csv`, `carbon.csv` | 수집 5 |
+| C-1 | 지수 시세 수집 (API → CSV, 실패 시 가상 지수 자동 생성) | 금융위 API 또는 stock_prices | `data/market/index.csv` | 4 |
+| C-2 | 지표별 평균·최대·최소·변동성, 일간 변화 상위 5 | market/* | `pandas_E_index_summary.csv` | 4 |
+| C-3 | 포트폴리오 vs 지수 일간 변화율·초과수익률 | F-4, C-1 | `sql_B_vs_index.csv`, `pandas_D_vs_index.csv` | 5 |
+| C-4 | 지수 급변일(상위 5)의 포트폴리오 방향과 종목별 기여도 | C-3 | `sql_B_index_shock_days.csv`, `sql_B_contribution.csv` | 5 |
+| C-5 | 위 결과를 근거 수치와 함께 한국어 브리핑 문장으로 생성 | outputs/ | `result_report.md` §6, `briefing.py` | 6 |
+| C-6 | (선택) 금·배출권 시세 수집 및 지수와 비교 | 금융위 일반상품시세 API | `data/market/gold.csv`, `carbon.csv` | 4 |
 
 ### 공통
 | ID | 요구사항 |
@@ -81,7 +83,8 @@
 
 | 리스크 | 대응 |
 |---|---|
-| 금융위 API 키 발급 지연 | 00:40까지 미발급 시 `collector.py`의 가상 지수로 진행, 리포트 한계 절에 기재 |
+| 포트폴리오가 포지션 단위 | 시세 JOIN 전 종목별 SUM 서브쿼리 필수 (docs/api.md §1). 검증 스크립트가 키 중복을 잡아냄 |
+| 금융위 API 키 발급 지연 | 선택 항목. 미발급이면 synthetic 지수 그대로 진행 |
 | 지수·시세 거래일 불일치 | INNER JOIN 기준 통일, 검증 스크립트가 차집합을 출력 |
 | 노트북 충돌 | 1인 1파일 + `.gitattributes` merge=ours |
 | backend/frontend에 시간 소진 | 03:00 필수 열 미완이면 선택 작업 중단 (§2 원칙) |

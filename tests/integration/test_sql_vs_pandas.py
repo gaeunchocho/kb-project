@@ -35,12 +35,12 @@ def log(msg: str):
 
 def check_raw():
     log("## 1. 원본 데이터 품질")
-    for name in ["portfolio.csv", "stock_prices.csv", "market/index.csv"]:
+    for name in ["raw/06_portfolio.csv", "raw/06_stock_prices.csv", "market/index.csv"]:
         p = DATA / name
         if not p.exists():
             log(f"- {name}: 파일 없음 (건너뜀)")
             continue
-        df = pd.read_csv(p)
+        df = pd.read_csv(p, encoding="utf-8-sig", dtype={"stock_id": str, "ticker": str})
         log(f"- {name}: {len(df)} rows, {df.shape[1]} cols")
         na = df.isna().sum()
         na = na[na > 0]
@@ -58,10 +58,10 @@ def check_raw():
 def check_calendar():
     """stock_prices 와 market_index 의 거래일 집합이 일치하는지 (JOIN 누락 방지)."""
     log("\n## 1-2. 거래일 정합 (stock_prices vs market_index)")
-    a, b = DATA / "stock_prices.csv", DATA / "market/index.csv"
+    a, b = DATA / "raw" / "06_stock_prices.csv", DATA / "market" / "index.csv"
     if not a.exists() or not b.exists():
         log("- 파일 없음 → SKIP"); return
-    sa = set(pd.to_datetime(pd.read_csv(a)["trade_date"]).dt.date)
+    _a = pd.read_csv(a, encoding="utf-8-sig"); sa = set(pd.to_datetime(_a["trade_date" if "trade_date" in _a else "date"]).dt.date)
     sb = set(pd.to_datetime(pd.read_csv(b)["trade_date"]).dt.date)
     only_a, only_b = sorted(sa - sb), sorted(sb - sa)
     log(f"- 시세에만 있는 날 {len(only_a)}개: {only_a[:5]}")
@@ -75,7 +75,7 @@ def compare(sql_file, pd_file, keys, cols, tol):
         log(f"- {sql_file} vs {pd_file}: 파일 없음 → SKIP")
         return None
     try:
-        sa, sb = pd.read_csv(a), pd.read_csv(b)
+        sa, sb = pd.read_csv(a, dtype={"ticker": str}), pd.read_csv(b, dtype={"ticker": str})
     except pd.errors.EmptyDataError:
         log(f"- {sql_file} vs {pd_file}: 빈 파일 있음 → FAIL")
         return False
