@@ -1,5 +1,6 @@
 -- ============================================================
 -- portfolio.sql — SQL 담당 1: 보유/평가/손익 (F)
+-- 담당: (이름)   브랜치: <본인 github id>
 -- 담당: 이채우   브랜치: leechaewoo
 -- 테이블: portfolio(position_id, ticker, name, buy_price, quantity) — 같은 종목이 여러 포지션으로 존재
 --        stock_prices(trade_date, ticker, close_price, volume)
