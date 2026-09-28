@@ -33,6 +33,13 @@
 - 이유: AI의 첫 추측(오퍼레이션명)은 틀렸고, 실제 curl 호출로 검증한 뒤에야 정확한 이름을 확정함. AI 코드를 그대로 커밋하지 않고 매번 실제 API 응답으로 확인한 덕에 틀린 엔드포인트를 걸러냄
 - 최종 반영 위치: `backend/services/market/collector.py`의 `API_BASE`/`API_OPERATION` 상수, `fetch_index()`
 
+### 사례 3 — 고준환 (도구: Copilot)
+- 요청 내용: 백엔드 API와 기존 CSV를 활용해 포트폴리오·시장 지표 프론트엔드 구성
+- AI 응답 요약: 응답 가능한 평가·상하위·지수 요약은 API로 호출하고, 없는 시계열 산출물은 기존 원본 CSV로 준비해 표시
+- 실행·검증 결과: API 응답 및 정적 CSV 제공 확인, 프론트 테스트 4개와 빌드 통과; 누락 급변일 데이터에서도 화면 오류가 나지 않도록 검증
+- 판정: 수정
+- 이유: 데이터별 API 제공 여부에 맞춰 API와 CSV 방식을 분리하고 백엔드 및 `.env`는 변경하지 않음
+- 최종 반영 위치: `frontend/src/api/client.js`, `frontend/src/pages/MarketPage.js`, `frontend/scripts/sync-outputs.js`
 ### 사례 3 — 리드 (도구: Claude)
 - 요청 내용: `outputs/*.csv`를 읽어 JSON으로 반환하는 FastAPI 라우터(`/portfolio/valuation`, `/market/vs-index` 등 9개) 생성
 - AI 응답 요약: `pd.read_csv(...).to_dict(orient="records")`로 바로 반환하는 코드. `df.where(df.notna(), None)`으로 결측을 null 처리했다고 설명

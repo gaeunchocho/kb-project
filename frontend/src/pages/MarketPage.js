@@ -32,6 +32,8 @@ function sectionState(result, isEmpty) {
 }
 
 function withDirectionLabel(rows) {
+  if (!Array.isArray(rows)) return [];
+
   return rows.map((row) => ({
     ...row,
     direction_label: row.direction === "same" ? "동일" : row.direction === "opposite" ? "반대" : row.direction,
