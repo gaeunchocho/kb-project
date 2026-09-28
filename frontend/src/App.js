@@ -11,7 +11,6 @@ export default function App() {
   const reportDataApiStatus = useCallback((status) => {
     setDataApiStatus(status);
   }, []);
-
   return (
     <div className="app">
       <header className="app-header">
