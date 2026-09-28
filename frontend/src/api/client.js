@@ -6,6 +6,40 @@ export class DataFileError extends Error {
   }
 }
 
+const API_BASE = process.env.REACT_APP_API_BASE || "";
+
+export class ApiError extends Error {
+  constructor(message, status) {
+    super(message);
+    this.name = "ApiError";
+    this.status = status;
+  }
+}
+
+async function getJson(path) {
+  let response;
+  try {
+    response = await fetch(`${API_BASE}${path}`);
+  } catch {
+    throw new ApiError("백엔드 API에 연결할 수 없습니다.", 0);
+  }
+
+  if (!response.ok) {
+    let detail = `백엔드 요청 실패 (${response.status})`;
+    try {
+      const body = await response.json();
+      if (body?.detail) {
+        detail = Array.isArray(body.detail) ? JSON.stringify(body.detail) : body.detail;
+      }
+    } catch {
+      // Keep the HTTP status message when the error response is not JSON.
+    }
+    throw new ApiError(detail, response.status);
+  }
+
+  return response.json();
+}
+
 function parseCsv(text) {
   const rows = [];
   let row = [];
@@ -72,7 +106,7 @@ async function getCsv(name) {
 
   if (!response.ok) {
     throw new DataFileError(
-      `outputs/${name} 파일이 프론트엔드에 없습니다. 프로젝트 루트 outputs 폴더에 파일을 추가한 뒤 프론트엔드를 다시 시작하세요.`,
+      `프론트 정적 결과 파일 outputs/${name}을 찾을 수 없습니다. 프론트엔드를 다시 시작해 결과 파일을 동기화하세요.`,
       response.status
     );
   }
@@ -81,14 +115,11 @@ async function getCsv(name) {
 }
 
 export function getValuation() {
-  return getCsv("pandas_C_valuation.csv");
+  return getJson("/portfolio/valuation");
 }
 
-export async function getTopBottom(n = 3) {
-  const rows = await getCsv("pandas_C_top_bottom.csv");
-  const top = rows.filter((row) => row.rank === "top").slice(0, n);
-  const bottomRows = rows.filter((row) => row.rank === "bottom");
-  return { top, bottom: bottomRows.slice(-n) };
+export function getTopBottom(n = 3) {
+  return getJson(`/portfolio/top-bottom?n=${n}`);
 }
 
 export function getDaily() {
@@ -96,7 +127,7 @@ export function getDaily() {
 }
 
 export function getMarketSummary() {
-  return getCsv("pandas_E_index_summary.csv");
+  return getJson("/market/summary");
 }
 
 export function getVsIndex() {

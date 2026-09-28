@@ -20,7 +20,7 @@ export default function App() {
         </div>
         <div className="header-actions">
           <div className="badges">
-            <span className="badge badge-ok">정적 CSV 모드</span>
+            <span className="badge badge-ok">백엔드 API + CSV</span>
             <span
               className={
                 dataApiStatus.status === "success"
@@ -30,12 +30,12 @@ export default function App() {
                     : "badge badge-fail"
               }
             >
-              CSV{" "}
+              데이터{" "}
               {dataApiStatus.status === "loading"
                 ? "불러오는 중"
                 : dataApiStatus.status === "success"
                   ? "불러옴"
-                  : `일부 없음 (${dataApiStatus.failed}/${dataApiStatus.total})`}
+                  : `일부 실패 (${dataApiStatus.failed}/${dataApiStatus.total})`}
             </span>
           </div>
           <button
@@ -51,8 +51,8 @@ export default function App() {
       <section className="panel">
         <h2>결과 파일 표시</h2>
         <p className="status">
-          백엔드 API 호출 없이 기존 outputs 및 data CSV로 준비한 결과를 표시합니다. 데이터 다시 불러오기는
-          현재 프론트에 복사된 CSV를 다시 읽습니다.
+          사용 가능한 백엔드 API와 기존 outputs/data CSV를 함께 사용합니다. 데이터 다시 불러오기는 현재
+          결과를 다시 요청합니다.
         </p>
       </section>
 
