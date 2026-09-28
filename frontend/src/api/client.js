@@ -1,76 +1,108 @@
-const API_BASE = process.env.REACT_APP_API_BASE || "";
-
-export class ApiError extends Error {
+export class DataFileError extends Error {
   constructor(message, status) {
     super(message);
-    this.name = "ApiError";
+    this.name = "DataFileError";
     this.status = status;
   }
 }
 
-async function getJson(path) {
+function parseCsv(text) {
+  const rows = [];
+  let row = [];
+  let field = "";
+  let quoted = false;
+
+  for (let index = 0; index < text.length; index += 1) {
+    const char = text[index];
+
+    if (quoted) {
+      if (char === '"' && text[index + 1] === '"') {
+        field += '"';
+        index += 1;
+      } else if (char === '"') {
+        quoted = false;
+      } else {
+        field += char;
+      }
+    } else if (char === '"' && field.length === 0) {
+      quoted = true;
+    } else if (char === ",") {
+      row.push(field);
+      field = "";
+    } else if (char === "\n" || char === "\r") {
+      row.push(field);
+      if (row.some((value) => value !== "")) rows.push(row);
+      row = [];
+      field = "";
+      if (char === "\r" && text[index + 1] === "\n") index += 1;
+    } else {
+      field += char;
+    }
+  }
+
+  if (field !== "" || row.length > 0) {
+    row.push(field);
+    if (row.some((value) => value !== "")) rows.push(row);
+  }
+
+  if (rows.length === 0) return [];
+
+  const headers = rows[0].map((header, index) =>
+    index === 0 ? header.replace(/^\uFEFF/, "") : header
+  );
+  return rows.slice(1).map((values) =>
+    Object.fromEntries(
+      headers.map((header, index) => {
+        const value = values[index] ?? "";
+        if (value === "") return [header, null];
+        const number = Number(value);
+        return [header, Number.isFinite(number) ? number : value];
+      })
+    )
+  );
+}
+
+async function getCsv(name) {
   let response;
   try {
-    response = await fetch(`${API_BASE}${path}`);
-  } catch (err) {
-    throw new ApiError(
-      "백엔드에 연결할 수 없습니다. uvicorn이 실행 중인지 확인하세요.",
-      0
-    );
+    response = await fetch(`/outputs/${name}`, { cache: "no-store" });
+  } catch {
+    throw new DataFileError(`정적 결과 파일을 불러오지 못했습니다: outputs/${name}`, 0);
   }
 
   if (!response.ok) {
-    const raw = await response.text();
-    let detail = `요청 실패 (${response.status})`;
-    try {
-      const body = JSON.parse(raw);
-      if (body && body.detail) {
-        detail = Array.isArray(body.detail) ? JSON.stringify(body.detail) : body.detail;
-      }
-    } catch {
-      if (response.status >= 500) {
-        detail =
-          "백엔드 API(http://127.0.0.1:8000)에 연결하지 못했습니다. 프로젝트 루트에서 `python -m uvicorn backend.main:app --reload` 를 실행하세요.";
-      }
-    }
-    throw new ApiError(detail, response.status);
+    throw new DataFileError(
+      `outputs/${name} 파일이 프론트엔드에 없습니다. 프로젝트 루트 outputs 폴더에 파일을 추가한 뒤 프론트엔드를 다시 시작하세요.`,
+      response.status
+    );
   }
 
-  return response.json();
-}
-
-export function getHealth() {
-  return getJson("/health");
+  return parseCsv(await response.text());
 }
 
 export function getValuation() {
-  return getJson("/portfolio/valuation");
+  return getCsv("pandas_C_valuation.csv");
 }
 
-export function getTopBottom(n = 3) {
-  return getJson(`/portfolio/top-bottom?n=${n}`);
+export async function getTopBottom(n = 3) {
+  const rows = await getCsv("pandas_C_top_bottom.csv");
+  const top = rows.filter((row) => row.rank === "top").slice(0, n);
+  const bottomRows = rows.filter((row) => row.rank === "bottom");
+  return { top, bottom: bottomRows.slice(-n) };
 }
 
 export function getDaily() {
-  return getJson("/portfolio/daily");
+  return getCsv("pandas_D_daily_total.csv");
 }
 
 export function getMarketSummary() {
-  return getJson("/market/summary");
+  return getCsv("pandas_E_index_summary.csv");
 }
 
 export function getVsIndex() {
-  return getJson("/market/vs-index");
+  return getCsv("pandas_D_vs_index.csv");
 }
 
-export function getShockDays(n = 5) {
-  return getJson(`/market/shock-days?n=${n}`);
-}
-
-export function getBriefing() {
-  return getJson("/briefing");
-}
-
-export function getValidation() {
-  return getJson("/validation");
+export async function getShockDays(n = 5) {
+  return (await getCsv("pandas_D_index_shock_days.csv")).slice(0, n);
 }
